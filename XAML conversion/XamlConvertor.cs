@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using Microsoft.CSharp;
+using XamlConversion.Parsers;
 
 namespace XamlConversion
 {
