@@ -22,6 +22,9 @@ namespace XamlConversion.Parsers
 
         protected override void ParseAttribute(XAttribute attribute)
         {
+            if (attribute.IsNamespaceDeclaration)
+                return;
+
             var propertyName = attribute.Name.LocalName;
             SetProperty(VariableName, Type, propertyName, attribute.Value);
         }

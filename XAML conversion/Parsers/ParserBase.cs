@@ -3,7 +3,7 @@ using System.CodeDom;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Markup;
+using System.Xaml.Schema;
 using System.Xml.Linq;
 
 namespace XamlConversion.Parsers
@@ -31,7 +31,8 @@ namespace XamlConversion.Parsers
             string ns = xName.Namespace.NamespaceName;
             if (string.IsNullOrEmpty(ns))
                 ns = "http://schemas.microsoft.com/netfx/2007/xaml/presentation";
-            return XamlTypeMapper.DefaultMapper.GetType(ns, xName.LocalName);
+            var xamlSchemaContext = new XamlSchemaContextWithDefault();
+            return xamlSchemaContext.GetXamlType(new XamlTypeName(ns, xName.LocalName)).UnderlyingType;
         }
 
         protected static Type GetPropertyType(string name, Type type)

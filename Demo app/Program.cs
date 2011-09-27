@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using XamlConversion;
 
 namespace Demo_app
@@ -22,6 +23,12 @@ namespace Demo_app
     </ListView.View>
 </ListView>";
             Console.WriteLine(new XamlConvertor().ConvertToString(xaml));
+
+            xaml = @"<ListView xmlns:local=""clr-namespace:Demo_app""><ListView.View><local:CustomView /></ListView.View></ListView>";
+            Console.WriteLine(new XamlConvertor().ConvertToString(xaml));
         }
     }
+
+    class CustomView : ViewBase
+    {}
 }
