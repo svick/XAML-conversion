@@ -63,23 +63,54 @@ namespace XamlConversion.Parsers
             if (converter == null)
                 return valueExpression;
 
-            var conversion = new CodeCastExpression(
-                type.Name,
-                new CodeMethodInvokeExpression(
-                    new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("TypeDescriptor"), "GetConverter",
-                                                   new CodeTypeOfExpression(type.Name)), "ConvertFromInvariantString",
-                    new CodePrimitiveExpression(value)));
+            if (converter.CanConvertFrom(typeof(String)))
+            {
+                var conversion = new CodeCastExpression(
+                    type.Name,
+                    new CodeMethodInvokeExpression(
+                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("TypeDescriptor"), "GetConverter",
+                            new CodeTypeOfExpression(type.Name)), "ConvertFromInvariantString",
+                            new CodePrimitiveExpression(value)));
 
-            return conversion;
+                return conversion;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected void SetProperty(string variableName, Type variableType, string propertyName, string value)
         {
-            var left = new CodePropertyReferenceExpression(
-                new CodeVariableReferenceExpression(variableName), propertyName);
-            var right = ConvertTo(value, GetPropertyType(propertyName, variableType));
-            var assignment = new CodeAssignStatement(left, right);
-            State.AddStatement(assignment);
+
+            if (value.StartsWith("{"))
+            {
+                throw new NotImplementedException();
+            }
+
+            // is it a Attached property?
+            if (propertyName.Contains("."))
+            {
+                var s = propertyName.Split('.');
+                string staticObjName = s[0];
+                CodeMethodInvokeExpression addExpression = new CodeMethodInvokeExpression(
+                    new CodeTypeReferenceExpression(GetTypeFromXName(s[0])),
+                    "Set" + s[1],
+                    new CodeExpression[] 
+                    { new CodeVariableReferenceExpression(variableName), 
+                        new CodePrimitiveExpression(value)});
+
+                State.AddStatement(new CodeExpressionStatement(addExpression));
+            }
+            else
+            {
+                var left = new CodePropertyReferenceExpression(
+                    new CodeVariableReferenceExpression(variableName), propertyName);
+                var right = ConvertTo(value, GetPropertyType(propertyName, variableType));
+                var assignment = new CodeAssignStatement(left, right);
+                State.AddStatement(assignment);
+            }
+
         }
     }
 }
